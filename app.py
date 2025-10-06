@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as  plt
+import matplotlib.ticker as ticker
 
 
 # this is setting for the page, so that charts, tables sab beech me dikhne ki bajay wide poore page pe dikhe
@@ -46,10 +47,27 @@ def load_overall_details():
         temp = df.groupby(['year', 'month'])['amount'].count().reset_index()
 
     temp['x-axis'] = temp['year'].astype(str) + '-' + temp['month'].astype(str)
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 4))
     # custom_colors2 = ['pink', 'lavender', 'grey', 'blue']
     # line chart
-    ax.plot(temp['x-axis'], temp['amount'])
+    ax.plot(temp['x-axis'], temp['amount'], marker='o', linestyle='-', color='blue')
+
+    ax.set_xlabel('Year-Month')
+    ax.set_ylabel('Amount')
+    ax.set_title(f'{selected_option} of Amount by Month and Year')
+    # Rotate x-axis labels and show every 2nd label
+    ax.set_xticks(range(0, len(temp['x-axis']), 2))
+    ax.set_xticklabels(temp['x-axis'][::2], rotation=45, ha='right')
+
+    # Format y-axis (e.g., add commas, adjust scale)
+    ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f'{x:,.0f}'))
+
+    # Optional: add grid for clarity
+    ax.grid(True, which='major', linestyle='--', linewidth=0.5, alpha=0.7)
+
+    # Adjust layout
+    plt.tight_layout()
+    plt.tight_layout()  # Adjust layout to fit labels
     st.pyplot(fig)
 
 
@@ -92,7 +110,7 @@ def investor_details(investor):
     st.title("Investor Name: "+ investor)
 
 #     here we are loading their recent investment
-    st.subheader(':Blue[Most recent investments: ]')
+    st.subheader(':blue[Most recent investments: ]')
     recentinvestment = (df[df['investors'].str.contains(investor)].head()
                  [['date', 'startup', 'vertical', 'city', 'round', 'amount']])
 
